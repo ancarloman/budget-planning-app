@@ -8,6 +8,15 @@ html {
   font-family: 'Inter', sans-serif;
 }
 
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+.topbar-margin-right {
+  margin-right: 1rem ;
+}
+
 
 /* daisyUI should be added as a plugin in tailwind.config.js */
 
