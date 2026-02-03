@@ -1,18 +1,43 @@
-function SideBar() {
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
+import { Link } from '@tanstack/react-router';
+
+export type NavItem = {
+  name: string;
+  to?: string;
+}
+
+interface SidebarProps {
+  navItems: NavItem[];
+}
+
+function SideBar({ navItems }: SidebarProps) {
   return (
     <> 
-        <aside className="w-[15%] min-w-[120px] max-w-[280px] bg-base-200 flex flex-col border-r border-base-300 overflow-hidden p-4">
-            <h1 className="text-sm sm:text-base md:text-xl text-center font-semibold italic mb-4">
-                Portfolio
-            </h1>
+      <Sidebar>
+        <SidebarHeader>
+          <h1 className="text-2xl text-center font-bold italic py-4">Portfolio</h1>
+        </SidebarHeader>
 
-            <ul className="flex flex-col flex-1 justify-start gap-2 mr-2 p-0 ml-[-40px] w-full list-none">
-                <li className="w-full"><button className="btn w-full">Project 1</button></li>
-                <li className="w-full"><button className="btn w-full">Project 2</button></li>
-                <li className="w-full"><button className="btn w-full">Project 3</button></li>
-            </ul>
+        <SidebarContent>  
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {navItems.map((item) => (
+                  <SidebarMenuItem key={item.name}>
+                    <SidebarMenuButton asChild>
+                      <Link to={item.to || "/"}>
+                        <span>{item.name}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
 
-        </aside>
+        </SidebarContent>
+
+      </Sidebar>
     </>
     
   )
