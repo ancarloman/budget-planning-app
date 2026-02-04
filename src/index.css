@@ -39,12 +39,17 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --button-filled-bg: var(--primary);
+  --button-filled-fg: var(--primary-foreground);
+  --button-outline-border: var(--border);
+  --button-outline-fg: var(--foreground);
+  --button-outline-hover-bg: var(--accent);
 }
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: oklch(95.836% 0.04452 91.744);
+  --foreground: oklch(70.85% 0.081 289.06);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -55,10 +60,10 @@
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
+  --accent: oklch(98.792% 0.01623 91.557);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
+  --border: oklch(70.85% 0.081 289.06);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
   --chart-1: oklch(0.646 0.222 41.116);
@@ -66,14 +71,27 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
+  --sidebar: oklch(94.227% 0.06488 94.015);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(59.512% 0.09415 20.212);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(98.511% 0.00011 271.152);
+  --sidebar-accent: oklch(62.625% 0.20375 355.046);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Additional sidebar variables ... */
+  /* New accent colors */
+  --sidebar-1: oklch(76.40% 0.071 235.96);
+  --sidebar-2: oklch(79.67% 0.083 329.03);
+  --sidebar-3: oklch(84.82% 0.068 34.43);
+  --sidebar-4: oklch(88.752% 0.0935 80.842);
+  --sidebar-5: oklch(70.85% 0.081 289.06);
+
+  /* Foregrounds for accents */
+  --sidebar-foreground-yellow: oklch(92.73% 0.069 81.00);
+  --sidebar-foreground-purple: oklch(70.85% 0.081 289.06);
+  --sidebar-foreground-orange: oklch(84.82% 0.068 34.43);  
 }
  
 .dark {
@@ -104,10 +122,37 @@
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent: oklch(79.67% 0.083 329.03);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.439 0 0);
+
+  /* Sidebar colors (adjust if needed for dark mode) */
+  --sidebar-1: oklch(76.40% 0.071 235.96);
+  --sidebar-2: oklch(79.67% 0.083 329.03);
+  --sidebar-3: oklch(84.82% 0.068 34.43);
+  --sidebar-4: oklch(92.73% 0.069 81.00);
+  --sidebar-5: oklch(70.85% 0.081 289.06);
+
+  --sidebar-foreground-yellow: oklch(92.73% 0.069 81.00);
+  --sidebar-foreground-purple: oklch(70.85% 0.081 289.06);
+  --sidebar-foreground-orange: oklch(84.82% 0.068 34.43);
+
+}
+
+
+.Sidebar {
+  border-radius: var(--radius);
+  overflow: hidden; /* ensures items don’t spill outside rounded corners */
+}
+
+.SidebarMenuItem {
+  border-radius: var(--radius-sm); /* slightly smaller than the container */
+}
+
+/* Optional: hover effect */
+.SidebarMenuItem:hover {
+  border-radius: var(--radius-sm); /* keeps it consistent */
 }
 
 
@@ -118,4 +163,20 @@
   body {
     @apply bg-background text-foreground;
   }
+
+    /* Default icon color */
+  svg {
+    color: var(--foreground);
+  }
+
+  /* Muted icons (secondary text, placeholders, etc.) */
+  .text-muted svg {
+    color: var(--muted-foreground);
+  }
+
+  /* Accent on hover */
+  /* a:hover svg,
+  button:hover svg {
+    color: var(--accent);
+  } */
 }

@@ -9,7 +9,7 @@ function TopBar() {
     <div className="w-full z-50 flex items-center justify-end px-4 md:px-8 py-4 border-b bg-background gap-4">
       <div className="flex items-center gap-4">
         <Button variant="outline" size="icon-sm">
-          <Cat/> {/* Theme toggle */}
+          <Flower2/> {/* Theme toggle */}
         </Button>
 
         <Avatar>
