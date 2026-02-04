@@ -53,7 +53,7 @@
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
+  --popover-foreground: oklch(70.85% 0.081 289.06);
   --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
@@ -61,7 +61,7 @@
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(98.792% 0.01623 91.557);
-  --accent-foreground: oklch(0.205 0 0);
+  --accent-foreground: oklch(70.85% 0.081 289.06);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(70.85% 0.081 289.06);
   --input: oklch(0.922 0 0);
@@ -77,8 +77,9 @@
   --sidebar-primary-foreground: oklch(98.511% 0.00011 271.152);
   --sidebar-accent: oklch(62.625% 0.20375 355.046);
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.922 0 0);
+  /* --sidebar-border: oklch(0.922 0 0); */
   --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-border: transparent;
 
   /* Additional sidebar variables ... */
   /* New accent colors */
@@ -124,8 +125,9 @@
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(79.67% 0.083 329.03);
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
+  /* --sidebar-border: oklch(1 0 0 / 10%); */
   --sidebar-ring: oklch(0.439 0 0);
+    --sidebar-border: transparent;
 
   /* Sidebar colors (adjust if needed for dark mode) */
   --sidebar-1: oklch(76.40% 0.071 235.96);
@@ -179,4 +181,11 @@
   button:hover svg {
     color: var(--accent);
   } */
+
+  @layer base {
+    [data-slot^="sidebar"] {
+      border: none !important;
+    }
+  }
+
 }
