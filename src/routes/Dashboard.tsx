@@ -33,6 +33,7 @@ import {
   FieldTitle,
 } from "@/components/ui/field"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import TransactionTable from "@/components/dashboard/TransactionTable"
 
 
 function Dashboard() {
@@ -46,7 +47,7 @@ function Dashboard() {
   ];
 
   return (
-    <div className="h-full p-6 max-w-6xl mx-auto flex flex-col gap-4">
+    <div className="min-h-screen p-6 max-w-6xl mx-auto flex flex-col">
         <Card className="w-full max-w-2xl mx-auto">
           <CardContent>
             <div className="flex justify-between">
@@ -104,7 +105,7 @@ function Dashboard() {
                               <FieldContent className="bg-secondary">
                                 <FieldTitle>Apply To Fund</FieldTitle>
                                 <FieldDescription>
-                                  The selected currency will be applied to your fund.
+                                  The selected currency will be applied to your fund only.
                                 </FieldDescription>
                               </FieldContent>
                               <RadioGroupItem value="plus" id="apply-to-fund" />
@@ -187,6 +188,8 @@ function Dashboard() {
             </div>
           </CardContent>
         </Card>
+                        
+        <TransactionTable />
       
     </div>
 
