@@ -1,295 +1,140 @@
+import { useState } from "react"
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Card, CardContent } from "../ui/card";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
+import { Card, CardContent, CardFooter } from "../ui/card";
+
+type Transaction = {
+    id: number
+    date: string
+    title: string
+    description?: string
+    amount: string
+}
+const PAGE_SIZE = 10
 
 function TransactionTable() {
+    const transactions: Transaction[] = Array.from({ length: 87 }).map((_, i) => ({
+    id: i + 1,
+    date: "Feb 15, 2026",
+    title: "Snacks",
+    description: i % 2 === 0 ? "Project related expense" : undefined,
+    amount: "-$305.50",
+    }))
+
+    const [page, setPage] = useState(1)
+
+    const totalPages = Math.ceil(transactions.length / PAGE_SIZE)
+
+    const paginatedRows = transactions.slice(
+        (page - 1) * PAGE_SIZE,
+        page * PAGE_SIZE
+    )
+
     return (
         <>
-        <Card className="flex-1 flex flex-col border-0 min-h-0">
-        <CardContent className="pt-4 flex-1 flex flex-col min-h-0 overflow-hidden">
 
-        <div className="flex-1 min-h-0 overflow-y-auto">
-        <Table>
-        <TableCaption>A list of your transactions.</TableCaption>
-        <TableHeader className="sticky top-0 bg-background z-10">
-            <TableRow>
-            <TableHead className="w-[200px]">DATE</TableHead>
-            <TableHead>DETAILS</TableHead>
-            <TableHead className="text-right">AMOUNT</TableHead>
-            </TableRow>
-        </TableHeader>
-        <TableBody>
-            <TableRow>
-            <TableCell className="font-medium">Feb 15, 2026</TableCell>
-            <TableCell>
-                <span className="font-medium leading-tight">
-                Snacks
-                </span>
-                <p className="text-muted-foreground text-xs break-words">Project 1  
-                </p>
-            </TableCell>
-            <TableCell className="font-medium text-right">-$305.50</TableCell>
-            </TableRow>
+            <div className="mt-8 p-2 rounded-md bg-foreground">
+                <h2 className="font-medium text-center text-accent italic">Transaction History</h2>
+            </div>
+        <Card className="border-0 mt-4">
+        <CardContent>
+            <Table>
+            <TableHeader>
+                <TableRow>
+                <TableHead className="w-50">Date</TableHead>
+                <TableHead>Details</TableHead>
+                <TableHead className="text-right">Amount</TableHead>
+                </TableRow>
+            </TableHeader>
 
-            <TableRow>
-            <TableCell className="font-medium">Feb 11, 2026</TableCell>
-            <TableCell>
-                <span className="font-medium leading-tight">
-                Added Fund
-                </span>
-                <p className="text-muted-foreground text-xs break-words">  
-                </p>
-            </TableCell>
-            <TableCell className="font-medium text-right">+$2,000.00</TableCell>
-            </TableRow>
+            <TableBody>
+                {paginatedRows.map((tx) => (
+                <TableRow key={tx.id}>
+                    <TableCell className="font-thin">
+                    {tx.date}
+                    </TableCell>
 
-            <TableRow>
-            <TableCell className="font-medium">Feb 15, 2026</TableCell>
-            <TableCell>
-                <span className="font-medium leading-tight">
-                Snacks
-                </span>
-                <p className="text-muted-foreground text-xs break-words">  
-                </p>
-            </TableCell>
-            <TableCell className="font-medium text-right">-$305.50</TableCell>
-            </TableRow>
+                    <TableCell>
+                    <div className="flex flex-col gap-1">
+                        <span className="font-thin leading-tight">
+                        {tx.title}
+                        </span>
+                        {tx.description && (
+                        <p className="font-thin text-xs text-muted-foreground">
+                            {tx.description}
+                        </p>
+                        )}
+                    </div>
+                    </TableCell>
 
-            <TableRow>
-            <TableCell className="font-medium">Feb 15, 2026</TableCell>
-            <TableCell>
-                <span className="font-medium leading-tight">
-                    Snacks
-                </span>
-
-                <p className="text-muted-foreground text-xs break-words">
-                    Project 1bsdshdhsavdgsavdgsvdvhs bcsdhsasja. sdsdhs shjvdsvdhsa
-                    hsvdsadgsav.sd cshhvd Project 1bsdshdhsavdgsavdgsvdvhs bcsdhsasja. Project 1bsdshdhsavdgsavdgsvdvhs bcsdhsasja. sdsdhs shjvdsvdhsa
-                    hsvdsadgsav.sd cshhvd Project 1bsdshdhsavdgsavdgsvdvhs bcsdhsasja.
-                </p>
-            </TableCell>
-            <TableCell className="font-medium text-right">-$305.50</TableCell>
-            </TableRow>
-
-            <TableRow>
-            <TableCell className="font-medium">Feb 15, 2026</TableCell>
-            <TableCell>
-                <span className="font-medium leading-tight">
-                Snacks
-                </span>
-                <p className="text-muted-foreground text-xs break-words">Project 1  
-                </p>
-            </TableCell>
-            <TableCell className="font-medium text-right">-$305.50</TableCell>
-            </TableRow>
-
-            <TableRow>
-            <TableCell className="font-medium">Feb 11, 2026</TableCell>
-            <TableCell>
-                <span className="font-medium leading-tight">
-                Added Fund
-                </span>
-                <p className="text-muted-foreground text-xs break-words">  
-                </p>
-            </TableCell>
-            <TableCell className="font-medium text-right">+$2,000.00</TableCell>
-            </TableRow>
-
-            <TableRow>
-            <TableCell className="font-medium">Feb 15, 2026</TableCell>
-            <TableCell>
-                <span className="font-medium leading-tight">
-                Snacks
-                </span>
-                <p className="text-muted-foreground text-xs break-words">  
-                </p>
-            </TableCell>
-            <TableCell className="font-medium text-right">-$305.50</TableCell>
-            </TableRow>
-
-            <TableRow>
-            <TableCell className="font-medium">Feb 15, 2026</TableCell>
-            <TableCell>
-                <span className="font-medium leading-tight">
-                    Snacks
-                </span>
-
-                <p className="text-muted-foreground text-xs break-words">
-                    Project 1bsdshdhsavdgsavdgsvdvhs bcsdhsasja. sdsdhs shjvdsvdhsa
-                    hsvdsadgsav.sd cshhvd Project 1bsdshdhsavdgsavdgsvdvhs bcsdhsasja. Project 1bsdshdhsavdgsavdgsvdvhs bcsdhsasja. sdsdhs shjvdsvdhsa
-                    hsvdsadgsav.sd cshhvd Project 1bsdshdhsavdgsavdgsvdvhs bcsdhsasja.
-                </p>
-            </TableCell>
-            <TableCell className="font-medium text-right">-$305.50</TableCell>
-            </TableRow>
-
-            <TableRow>
-            <TableCell className="font-medium">Feb 15, 2026</TableCell>
-            <TableCell>
-                <span className="font-medium leading-tight">
-                Snacks
-                </span>
-                <p className="text-muted-foreground text-xs break-words">Project 1  
-                </p>
-            </TableCell>
-            <TableCell className="font-medium text-right">-$305.50</TableCell>
-            </TableRow>
-
-            <TableRow>
-            <TableCell className="font-medium">Feb 11, 2026</TableCell>
-            <TableCell>
-                <span className="font-medium leading-tight">
-                Added Fund
-                </span>
-                <p className="text-muted-foreground text-xs break-words">  
-                </p>
-            </TableCell>
-            <TableCell className="font-medium text-right">+$2,000.00</TableCell>
-            </TableRow>
-
-            <TableRow>
-            <TableCell className="font-medium">Feb 15, 2026</TableCell>
-            <TableCell>
-                <span className="font-medium leading-tight">
-                Snacks
-                </span>
-                <p className="text-muted-foreground text-xs break-words">  
-                </p>
-            </TableCell>
-            <TableCell className="font-medium text-right">-$305.50</TableCell>
-            </TableRow>
-
-            <TableRow>
-            <TableCell className="font-medium">Feb 15, 2026</TableCell>
-            <TableCell>
-                <span className="font-medium leading-tight">
-                    Snacks
-                </span>
-
-                <p className="text-muted-foreground text-xs break-words">
-                    Project 1bsdshdhsavdgsavdgsvdvhs bcsdhsasja. sdsdhs shjvdsvdhsa
-                    hsvdsadgsav.sd cshhvd Project 1bsdshdhsavdgsavdgsvdvhs bcsdhsasja. Project 1bsdshdhsavdgsavdgsvdvhs bcsdhsasja. sdsdhs shjvdsvdhsa
-                    hsvdsadgsav.sd cshhvd Project 1bsdshdhsavdgsavdgsvdvhs bcsdhsasja.
-                </p>
-            </TableCell>
-            <TableCell className="font-medium text-right">-$305.50</TableCell>
-            </TableRow>
-
-            <TableRow>
-            <TableCell className="font-medium">Feb 15, 2026</TableCell>
-            <TableCell>
-                <span className="font-medium leading-tight">
-                Snacks
-                </span>
-                <p className="text-muted-foreground text-xs break-words">Project 1  
-                </p>
-            </TableCell>
-            <TableCell className="font-medium text-right">-$305.50</TableCell>
-            </TableRow>
-
-            <TableRow>
-            <TableCell className="font-medium">Feb 11, 2026</TableCell>
-            <TableCell>
-                <span className="font-medium leading-tight">
-                Added Fund
-                </span>
-                <p className="text-muted-foreground text-xs break-words">  
-                </p>
-            </TableCell>
-            <TableCell className="font-medium text-right">+$2,000.00</TableCell>
-            </TableRow>
-
-            <TableRow>
-            <TableCell className="font-medium">Feb 15, 2026</TableCell>
-            <TableCell>
-                <span className="font-medium leading-tight">
-                Snacks
-                </span>
-                <p className="text-muted-foreground text-xs break-words">  
-                </p>
-            </TableCell>
-            <TableCell className="font-medium text-right">-$305.50</TableCell>
-            </TableRow>
-
-            <TableRow>
-            <TableCell className="font-medium">Feb 15, 2026</TableCell>
-            <TableCell>
-                <span className="font-medium leading-tight">
-                    Snacks
-                </span>
-
-                <p className="text-muted-foreground text-xs break-words">
-                    Project 1bsdshdhsavdgsavdgsvdvhs bcsdhsasja. sdsdhs shjvdsvdhsa
-                    hsvdsadgsav.sd cshhvd Project 1bsdshdhsavdgsavdgsvdvhs bcsdhsasja. Project 1bsdshdhsavdgsavdgsvdvhs bcsdhsasja. sdsdhs shjvdsvdhsa
-                    hsvdsadgsav.sd cshhvd Project 1bsdshdhsavdgsavdgsvdvhs bcsdhsasja.
-                </p>
-            </TableCell>
-            <TableCell className="font-medium text-right">-$305.50</TableCell>
-            </TableRow>
-
-            <TableRow>
-            <TableCell className="font-medium">Feb 15, 2026</TableCell>
-            <TableCell>
-                <span className="font-medium leading-tight">
-                Snacks
-                </span>
-                <p className="text-muted-foreground text-xs break-words">Project 1  
-                </p>
-            </TableCell>
-            <TableCell className="font-medium text-right">-$305.50</TableCell>
-            </TableRow>
-
-            <TableRow>
-            <TableCell className="font-medium">Feb 11, 2026</TableCell>
-            <TableCell>
-                <span className="font-medium leading-tight">
-                Added Fund
-                </span>
-                <p className="text-muted-foreground text-xs break-words">  
-                </p>
-            </TableCell>
-            <TableCell className="font-medium text-right">+$2,000.00</TableCell>
-            </TableRow>
-
-            <TableRow>
-            <TableCell className="font-medium">Feb 15, 2026</TableCell>
-            <TableCell>
-                <span className="font-medium leading-tight">
-                Snacks
-                </span>
-                <p className="text-muted-foreground text-xs break-words">  
-                </p>
-            </TableCell>
-            <TableCell className="font-medium text-right">-$305.50</TableCell>
-            </TableRow>
-
-            <TableRow>
-            <TableCell className="font-medium">Feb 15, 2026</TableCell>
-            <TableCell>
-                <span className="font-medium leading-tight">
-                    Snacks
-                </span>
-
-                <p className="text-muted-foreground text-xs break-words">
-                    Project 1bsdshdhsavdgsavdgsvdvhs bcsdhsasja. sdsdhs shjvdsvdhsa
-                    hsvdsadgsav.sd cshhvd Project 1bsdshdhsavdgsavdgsvdvhs bcsdhsasja. Project 1bsdshdhsavdgsavdgsvdvhs bcsdhsasja. sdsdhs shjvdsvdhsa
-                    hsvdsadgsav.sd cshhvd Project 1bsdshdhsavdgsavdgsvdvhs bcsdhsasja.
-                </p>
-            </TableCell>
-            <TableCell className="font-medium text-right">-$305.50</TableCell>
-            </TableRow>
-
-        </TableBody>
-        </Table>
-        </div>
+                    <TableCell className="text-right">
+                    {tx.amount}
+                    </TableCell>
+                </TableRow>
+                ))}
+            </TableBody>
+            </Table>
         </CardContent>
+
+        {totalPages > 1 && (
+            <CardFooter className="border-t flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">
+                Page {page} of {totalPages}
+            </span>
+
+            <Pagination>
+                <PaginationContent>
+                <PaginationItem>
+                    <PaginationPrevious
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    className={page === 1 ? "pointer-events-none opacity-50" : ""}
+                    />
+                </PaginationItem>
+
+                {Array.from({ length: totalPages }).map((_, i) => {
+                    const pageNumber = i + 1
+                    return (
+                    <PaginationItem key={pageNumber}>
+                        <PaginationLink
+                        isActive={page === pageNumber}
+                        onClick={() => setPage(pageNumber)}
+                        >
+                        {pageNumber}
+                        </PaginationLink>
+                    </PaginationItem>
+                    )
+                })}
+
+                <PaginationItem>
+                    <PaginationNext
+                    onClick={() =>
+                        setPage((p) => Math.min(totalPages, p + 1))
+                    }
+                    className={
+                        page === totalPages
+                        ? "pointer-events-none opacity-50"
+                        : ""
+                    }
+                    />
+                </PaginationItem>
+                </PaginationContent>
+            </Pagination>
+            </CardFooter>
+        )}
         </Card>
 
         </>
