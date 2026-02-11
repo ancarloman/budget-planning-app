@@ -5,6 +5,7 @@ import React from 'react';
 import { Spinner } from './components/ui/Loader';
 
 const DashboardPage = React.lazy(() => import('./routes/Dashboard'));
+const PortfolioPage = React.lazy(() => import('./routes/Portfolio'));
 
 
 const RootRoute = createRootRoute({
@@ -27,8 +28,18 @@ const RootRoute = createRootRoute({
   ),
 });
 
+const PortfolioRoute = createRoute({
+  getParentRoute: () => RootRoute,
+  path: '/portfolio/$portfolioId',
+  component: () => (
+    <React.Suspense fallback={<Spinner />}>
+      <PortfolioPage />
+    </React.Suspense>
+  ),
+})
+
  const routeTree = RootRoute.addChildren([
-  DashboardRoute,
+  DashboardRoute, PortfolioRoute,
 ]);
 
 export const router = createRouter({ routeTree }); 

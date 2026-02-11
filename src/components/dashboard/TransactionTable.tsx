@@ -46,10 +46,9 @@ function TransactionTable() {
 
     return (
         <>
-
-            <div className="mt-8 p-2 rounded-md bg-foreground">
-                <h2 className="font-medium text-center text-accent italic">Transaction History</h2>
-            </div>
+        <div className="mt-8 p-2 rounded-md bg-foreground">
+            <h2 className="font-medium text-center text-accent italic">Transaction History</h2>
+        </div>
         <Card className="border-0 mt-4">
         <CardContent>
             <Table>
