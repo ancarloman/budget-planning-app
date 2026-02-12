@@ -1,7 +1,7 @@
 import type { ColumnDef } from "@tanstack/react-table"
 import { Checkbox } from "@/components/ui/checkbox"
 import EditableCell from "../helper/editable-cell"
-
+import { Delete, Plus } from "lucide-react"
 import {
   useReactTable,
   getCoreRowModel,
@@ -17,8 +17,32 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
-import { useState } from "react"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Field, FieldGroup } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { useEffect, useState } from "react"
 import { Card } from "../ui/card"
+import { Button } from "@/components/ui/button"
 
 
 
@@ -214,6 +238,33 @@ export const columns: ColumnDef<LineItem>[] = [
       )
     },
   },
+  {
+    id: "action",
+    header: "",
+    cell: ({row}) => {
+      return (
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="ghost">
+              <Delete className="text-red-300" />
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure to delete item <span className="italic text-red-300">{row.original.entry}</span>?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction className="bg-red-300">Continue</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )
+    },
+  },
 ]
 
 function GrandTotal({ data }: { data: LineItem[] }) {
@@ -235,12 +286,6 @@ export function EditableDataTable() {
   const table = useReactTable({
     data,
     columns,
-    state: {
-        pagination: {
-        pageIndex: 0,
-        pageSize: 10,
-        },
-    },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     meta: {
@@ -256,12 +301,50 @@ export function EditableDataTable() {
     },
   })
 
+  useEffect(() => {
+    table.setPageSize(10)
+  }, [table])
+
   const pageIndex = table.getState().pagination.pageIndex
   const totalPages = table.getPageCount()
 
     return (
     <>
     <Card className="p-6 mt-12 border-0">
+      <div className="flex justify-end gap-2">
+        <Dialog>
+          <form>
+            <DialogTrigger asChild>
+              <Button variant="outline"><Plus /> Item</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-sm">
+              <DialogHeader>
+                <DialogTitle>New item</DialogTitle>
+              </DialogHeader>
+              <FieldGroup className="my-4">
+                <Field>
+                  <Label htmlFor="entry-1">Entry</Label>
+                  <Input id="entry-1" name="entry" defaultValue="Item" className="border-0 bg-accent"/>
+                </Field>
+                <Field>
+                  <Label htmlFor="quantity-1">Quantity</Label>
+                  <Input id="quantity-1" name="quantity" defaultValue="0" type="number" className="border-0 bg-accent"/>
+                </Field>
+                <Field>
+                  <Label htmlFor="amount-1">Amount</Label>
+                  <Input id="amount-1" name="amount" defaultValue="0" type="number" className="border-0 bg-accent"/>
+                </Field>
+              </FieldGroup>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline">Cancel</Button>
+                </DialogClose>
+                <Button type="submit">Add</Button>
+              </DialogFooter>
+            </DialogContent>
+          </form>
+        </Dialog>
+      </div>
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((hg) => (
