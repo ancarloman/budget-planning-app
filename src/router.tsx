@@ -28,7 +28,7 @@ const RootRoute = createRootRoute({
   ),
 });
 
-const PortfolioRoute = createRoute({
+export const PortfolioRoute = createRoute({
   getParentRoute: () => RootRoute,
   path: '/portfolio/$portfolioId',
   component: () => (
@@ -43,9 +43,3 @@ const PortfolioRoute = createRoute({
 ]);
 
 export const router = createRouter({ routeTree }); 
-
-// declare module '@tanstack/react-router' {
-//   interface Register {
-//     router: typeof router
-//   }
-// }

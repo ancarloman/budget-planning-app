@@ -2,8 +2,8 @@ import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHead
 import { Link } from '@tanstack/react-router';
 
 export type NavItem = {
+  portfolioId: string;
   name: string;
-  to?: string;
 }
 
 interface SidebarProps {
@@ -43,7 +43,7 @@ function SideBar({ navItems }: SidebarProps) {
                     } as React.CSSProperties}
                   >
                     <SidebarMenuButton  className="min-h-10" asChild>
-                      <Link to={item.to || "/"}>
+                      <Link to={`/portfolio/${item.portfolioId}`}>
                         <span className="font-bold">{item.name}</span>
                       </Link>
                     </SidebarMenuButton>

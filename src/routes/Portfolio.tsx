@@ -16,17 +16,16 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-//   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from '@/components/ui/button';
 import { Menu, BookCheck, FileArchive, Repeat, Delete, BookAlert } from 'lucide-react';
-import { useParams } from '@tanstack/react-router';
 import { EditableDataTable } from '@/components/portfolio/DataTable';
 import { Card, CardContent } from '@/components/ui/card';
 import { useState } from 'react';
+import { PortfolioRoute } from '@/router';
 
 function Portfolio() {
-    const portfolioId = useParams({strict: false}).portfolioId;
+    const { portfolioId } = PortfolioRoute.useParams();
     const [open, setOpen] = useState(false)
 
     return (

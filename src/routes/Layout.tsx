@@ -7,28 +7,28 @@ import { NavItemsContext } from '@/context/NavItemsContext'
 function Layout() {
   const navItems = [
     {
+      portfolioId: "hello girl",
       name: "Project 1",
-      to: "/project-1",
     },
     {
+      portfolioId: "2",
       name: "Project 2",
-      to: "/project-2",
     },
     {
+      portfolioId: "3",
       name: "Project 3",
-      to: "/project-3",
     },
     {
+      portfolioId: "4",
       name: "Project 4",
-      to: "/project-4",
     },
     {
+      portfolioId: "5",
       name: "Project 5",
-      to: "/project-5",
     },
     {
+      portfolioId: "6",
       name: "Project 6",
-      to: "/project-6",
     }
   ]
 
