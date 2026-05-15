@@ -28,14 +28,14 @@ function TopBar() {
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-[var(--background)]" align="end">
-            <DropdownMenuItem className="cursor-pointer hover:text-[var(--foreground)]">
+          <DropdownMenuContent className="bg-background" align="end">
+            <DropdownMenuItem className="cursor-pointer hover:text-foreground">
               <Link to="/profile" className="flex items-center cursor-pointer">
                 <User className="mr-2 h-4 w-4 text-foreground" />
                 <span>Profile</span>
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer hover:text-[var(--foreground)]">
+            <DropdownMenuItem className="cursor-pointer hover:text-foreground">
               <Link to="/settings" className="flex items-center cursor-pointer">
                 <Settings className="mr-2 h-4 w-4 text-foreground" />
                 <span>Settings</span>

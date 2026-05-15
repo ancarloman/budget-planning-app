@@ -3,49 +3,46 @@ import SideBar from '../components/layout/SideBar'
 import TopBar from '../components/layout/TopBar'
 import { Outlet } from '@tanstack/react-router'
 import { NavItemsContext } from '@/context/NavItemsContext'
+import { useEffect, useState } from 'react'
+
+interface Portfolio {
+  portfolio_id: string;
+  title: string;
+}
+
+async function getSidebarPortfolios() {
+  const res = await fetch("http://localhost:3001/api/sidebar/portfolios");
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch portfolios");
+  }
+
+  return res.json();
+}
 
 function Layout() {
-  const navItems = [
-    {
-      portfolioId: "hello girl",
-      name: "Project 1",
-    },
-    {
-      portfolioId: "2",
-      name: "Project 2",
-    },
-    {
-      portfolioId: "3",
-      name: "Project 3",
-    },
-    {
-      portfolioId: "4",
-      name: "Project 4",
-    },
-    {
-      portfolioId: "5",
-      name: "Project 5",
-    },
-    {
-      portfolioId: "6",
-      name: "Project 6",
-    }
-  ]
+  const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
+  console.log("Portfolios in Layout:", portfolios);
+
+  useEffect(() => {
+    getSidebarPortfolios()
+      .then(setPortfolios)
+      .catch(console.error);
+  }, []);
 
   return (
     <>
-    <NavItemsContext.Provider value={navItems}>
+    <NavItemsContext.Provider value={portfolios}>
     <div className="flex min-h-screen w-screen bg-muted">
       
       {/* Sidebar */}
       <SidebarProvider>
-      <SideBar navItems={navItems}/>
+      <SideBar navItems={portfolios}/>
 
       {/* Main area */}
       <div className="flex flex-col flex-1 min-w-0 min-h-0">
         <TopBar />
 
-        {/* <main className="flex-1 overflow-auto bg-base-200"> */}
         <div className="flex-1 min-h-0 overflow-hidden p-8">
           <Outlet />
         </div>

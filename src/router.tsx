@@ -30,7 +30,7 @@ const RootRoute = createRootRoute({
 
 export const PortfolioRoute = createRoute({
   getParentRoute: () => RootRoute,
-  path: '/portfolio/$portfolioId',
+  path: '/portfolio/by-title/$portfolioTitle',
   component: () => (
     <React.Suspense fallback={<Spinner />}>
       <PortfolioPage />

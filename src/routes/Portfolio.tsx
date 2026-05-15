@@ -30,7 +30,7 @@ function Portfolio() {
 
     return (
         <> 
-            <div className="min-h-screen p-6 max-w-6xl mx-auto flex flex-col">
+            <div className="min-h-screen  max-w-6xl mx-auto flex flex-col">
             <Card className='w-full max-w-3xl mx-auto border-0'>
             <CardContent>
             <div className="flex justify-between">
@@ -46,7 +46,7 @@ function Portfolio() {
                         </Field>
                         <Field>
                             <FieldLabel className="font-thin mt-[-1]">
-                                Fund
+                                Allotted Fund
                             </FieldLabel>
                             <input type="text" value={0.00} readOnly className="rounded-md border max-w-xl p-2" />
                             

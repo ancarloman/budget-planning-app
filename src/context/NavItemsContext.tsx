@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react";
 
 export interface NavItem {
-  name: string;
+  title: string;
   to?: string;
 }
 

@@ -47,7 +47,7 @@ function Dashboard() {
   ];
 
   return (
-    <div className="min-h-screen p-6 max-w-6xl mx-auto flex flex-col">
+    <div className="min-h-screen max-w-6xl mx-auto flex flex-col">
         <Card className="w-full max-w-2xl mx-auto">
           <CardContent>
             <div className="flex justify-between">

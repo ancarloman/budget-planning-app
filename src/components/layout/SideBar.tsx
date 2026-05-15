@@ -2,8 +2,8 @@ import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHead
 import { Link } from '@tanstack/react-router';
 
 export type NavItem = {
-  portfolioId: string;
-  name: string;
+  portfolio_id: string;
+  title: string;
 }
 
 interface SidebarProps {
@@ -22,7 +22,7 @@ function SideBar({ navItems }: SidebarProps) {
   return (
     <Sidebar className="w-64">
       <SidebarHeader>
-        <h1 className="text-4xl text-center text-foreground font-bold italic py-4">Portfolio</h1>
+        <Link to={"/"} className="text-4xl text-center text-foreground font-bold italic py-4">Portfolio</Link>
       </SidebarHeader>
 
       <SidebarContent>
@@ -34,7 +34,7 @@ function SideBar({ navItems }: SidebarProps) {
 
                 return (
                   <SidebarMenuItem
-                    key={item.name}
+                    key={item.title}
                     className="min-h-10"
                     style={{
                       backgroundColor: `var(--${combo.bg})`,
@@ -43,8 +43,8 @@ function SideBar({ navItems }: SidebarProps) {
                     } as React.CSSProperties}
                   >
                     <SidebarMenuButton  className="min-h-10" asChild>
-                      <Link to={`/portfolio/${item.portfolioId}`}>
-                        <span className="font-bold">{item.name}</span>
+                      <Link to={`/portfolio/${item.title}`}>
+                        <span className="font-bold">{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
