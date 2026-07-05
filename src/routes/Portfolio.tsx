@@ -19,14 +19,46 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from '@/components/ui/button';
 import { Menu, BookCheck, FileArchive, Repeat, Delete, BookAlert } from 'lucide-react';
-import { EditableDataTable } from '@/components/portfolio/DataTable';
+import { EditableDataTable } from '@/components/portfolio/PortfolioTable';
 import { Card, CardContent } from '@/components/ui/card';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PortfolioRoute } from '@/router';
+
+type Portfolio = {
+    portfolio_id: number
+    title: string
+    description: string
+    account_id: number
+    allotted_fund: number
+    budgeted_fund: number
+    spent_fund: number
+    completed: boolean | 0 | 1
+    archived: boolean | 0 | 1
+    created_at: string
+}
+
+async function getPortfolioData(portfolioId: string) {
+  const res = await fetch("http://localhost:3001/api/portfolio/" + portfolioId);
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  return res.json();
+}
 
 function Portfolio() {
     const { portfolioId } = PortfolioRoute.useParams();
     const [open, setOpen] = useState(false)
+
+    const [portfolio, setPortfolio] = useState<Portfolio>();
+          console.log("Portfolio in dashboard:", portfolio);
+        
+          useEffect(() => {
+            getPortfolioData(portfolioId)
+              .then(setPortfolio)
+              .catch(console.error);
+          }, [portfolioId]);
 
     return (
         <> 
@@ -41,14 +73,14 @@ function Portfolio() {
                             <FieldLabel className="font-thin mt-[-1]">
                                 Portfolio Name
                             </FieldLabel>
-                            <input type="text" value={portfolioId} readOnly className="rounded-md border max-w-xl p-2" />
+                            <input type="text" value={portfolio?.title ?? ""} readOnly className="rounded-md border max-w-xl p-2" />
                             
                         </Field>
                         <Field>
                             <FieldLabel className="font-thin mt-[-1]">
                                 Allotted Fund
                             </FieldLabel>
-                            <input type="text" value={0.00} readOnly className="rounded-md border max-w-xl p-2" />
+                            <input type="number" value={portfolio?.allotted_fund ?? ""} readOnly className="rounded-md border max-w-xl p-2" />
                             
                         </Field>
                     </FieldSet>
@@ -98,14 +130,14 @@ function Portfolio() {
             </CardContent>
             </Card>
 
-            <EditableDataTable />
+            <EditableDataTable portfolioId={portfolioId as string} />
             </div>
 
             <AlertDialog open={open} onOpenChange={setOpen}>
             <AlertDialogContent>
                 <AlertDialogHeader>
                 <AlertDialogTitle>
-                    Delete <span className="italic text-red-300">{portfolioId}</span>?
+                    Delete <span className="italic text-red-300">{portfolio?.title ?? ""}</span>?
                 </AlertDialogTitle>
 
                 <AlertDialogDescription>

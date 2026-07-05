@@ -43,7 +43,7 @@ function SideBar({ navItems }: SidebarProps) {
                     } as React.CSSProperties}
                   >
                     <SidebarMenuButton  className="min-h-10" asChild>
-                      <Link to={`/portfolio/${item.title}`}>
+                      <Link to={`/portfolio/${item.portfolio_id}`}>
                         <span className="font-bold">{item.title}</span>
                       </Link>
                     </SidebarMenuButton>

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   Table,
   TableBody,
@@ -18,22 +18,42 @@ import {
 import { Card, CardContent, CardFooter } from "../ui/card";
 
 type Transaction = {
-    id: number
-    date: string
+    transaction_id: number
+    created_at: string
     title: string
     description?: string
     amount: string
 }
+
+async function getTransactions() {
+  const res = await fetch("http://localhost:3001/api/transactions");
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch transactions");
+  }
+
+  return res.json();
+}
+
 const PAGE_SIZE = 10
 
 function TransactionTable() {
-    const transactions: Transaction[] = Array.from({ length: 87 }).map((_, i) => ({
-    id: i + 1,
-    date: "Feb 15, 2026",
-    title: "Snacks",
-    description: i % 2 === 0 ? "Project related expense" : undefined,
-    amount: "-$305.50",
-    }))
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
+      console.log("Transaction in dashboard:", transactions);
+    
+      useEffect(() => {
+        getTransactions()
+          .then(setTransactions)
+          .catch(console.error);
+      }, []);
+
+    // const transactions: Transaction[] = Array.from({ length: 87 }).map((_, i) => ({
+    // id: i + 1,
+    // date: "Feb 15, 2026",
+    // title: "Snacks",
+    // description: i % 2 === 0 ? "Project related expense" : undefined,
+    // amount: "-$305.50",
+    // }))
 
     const [page, setPage] = useState(1)
 
@@ -62,9 +82,9 @@ function TransactionTable() {
 
             <TableBody>
                 {paginatedRows.map((tx) => (
-                <TableRow key={tx.id}>
+                <TableRow key={tx.transaction_id}>
                     <TableCell className="font-thin">
-                    {tx.date}
+                    {tx.created_at}
                     </TableCell>
 
                     <TableCell>

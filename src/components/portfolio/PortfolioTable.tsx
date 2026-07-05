@@ -43,139 +43,41 @@ import {
 import { useEffect, useState } from "react"
 import { Card } from "../ui/card"
 import { Button } from "@/components/ui/button"
+// import type { NavItem } from "../layout/SideBar"
 
-
-
-export type LineItem = {
-  id: string
-  checked: boolean
-  entry: string
-  quantity: number
-  price: number
+interface EditableDataTableProps {
+  portfolioId: string;
 }
 
-const initialData: LineItem[] = [
-  {
-    id: "1",
-    checked: false,
-    entry: "Item A",
-    quantity: 1,
-    price: 100,
-  },
-  {
-    id: "2",
-    checked: false,
-    entry: "Item B",
-    quantity: 2,
-    price: 50,
-  },
-  {
-    id: "3",
-    checked: false,
-    entry: "Item A",
-    quantity: 1,
-    price: 100,
-  },
-  {
-    id: "4",
-    checked: false,
-    entry: "Item B",
-    quantity: 2,
-    price: 50,
-  },
-  {
-    id: "5",
-    checked: false,
-    entry: "Item A",
-    quantity: 1,
-    price: 100,
-  },
-  {
-    id: "6",
-    checked: false,
-    entry: "Item B",
-    quantity: 2,
-    price: 50,
-  },
-  {
-    id: "7",
-    checked: false,
-    entry: "Item A",
-    quantity: 1,
-    price: 100,
-  },
-  {
-    id: "8",
-    checked: false,
-    entry: "Item B",
-    quantity: 2,
-    price: 50,
-  },
-  {
-    id: "9",
-    checked: false,
-    entry: "Item A",
-    quantity: 1,
-    price: 100,
-  },
-  {
-    id: "10",
-    checked: false,
-    entry: "Item B",
-    quantity: 2,
-    price: 50,
-  },
-  {
-    id: "11",
-    checked: false,
-    entry: "Item A",
-    quantity: 1,
-    price: 100,
-  },
-  {
-    id: "12",
-    checked: false,
-    entry: "Item B",
-    quantity: 2,
-    price: 50,
-  },
-  {
-    id: "13",
-    checked: false,
-    entry: "Item A",
-    quantity: 1,
-    price: 100,
-  },
-  {
-    id: "14",
-    checked: false,
-    entry: "Item B",
-    quantity: 2,
-    price: 50,
-  },
-  {
-    id: "15",
-    checked: false,
-    entry: "Item A",
-    quantity: 1,
-    price: 100,
-  },
-  {
-    id: "16",
-    checked: false,
-    entry: "Item B",
-    quantity: 2,
-    price: 50,
-  },
-]
+interface Item {
+  item_id: number
+  title: string
+  quantity: number
+  price: number
+  spent: number | 0 | 1
+  transaction_id: number
+  portfolio_id: number
+  created_at: string
+}
 
-export const columns: ColumnDef<LineItem>[] = [
+
+async function getItems(portfolioId: string) {
+  const res = await fetch("http://localhost:3001/api/portfolio/items/" + portfolioId);
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch items");
+  }
+
+  return res.json();
+}
+
+export const columns: ColumnDef<Item>[] = [
   {
     id: "checked",
     header: "",
     cell: ({ row, table }) => (
       <Checkbox
-        checked={row.original.checked}
+        checked={row.original.spent === 1}
         onCheckedChange={(v) =>
           table.options.meta?.updateData(row.index, "checked", !!v)
         }
@@ -187,7 +89,7 @@ export const columns: ColumnDef<LineItem>[] = [
     header: "Entry",
     cell: ({ row, column, table }) => (
       <EditableCell
-        value={row.original.entry}
+        value={row.original.title}
         onSave={(v) =>
           table.options.meta?.updateData(row.index, column.id, v)
         }
@@ -224,13 +126,13 @@ export const columns: ColumnDef<LineItem>[] = [
     id: "subtotal",
     header: "Sub Total",
     cell: ({ row }) => {
-      const { quantity, price, checked } = row.original
+      const { quantity, price, spent } = row.original
       const subtotal = quantity * price
 
       return (
         <div className="text-right">        
         <span
-          className={checked ? "line-through text-muted-foreground" : ""}
+          className={spent ? "line-through text-muted-foreground" : ""}
         >
           {subtotal.toFixed(2)}
         </span>
@@ -251,7 +153,7 @@ export const columns: ColumnDef<LineItem>[] = [
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure to delete item <span className="italic text-red-300">{row.original.entry}</span>?</AlertDialogTitle>
+              <AlertDialogTitle>Are you sure to delete item <span className="italic text-red-300">{row.original.title}</span>?</AlertDialogTitle>
               <AlertDialogDescription>
                 This action cannot be undone.
               </AlertDialogDescription>
@@ -267,9 +169,9 @@ export const columns: ColumnDef<LineItem>[] = [
   },
 ]
 
-function GrandTotal({ data }: { data: LineItem[] }) {
+function GrandTotal({ data }: { data: Item[] }) {
   const total = data
-    .filter((row) => !row.checked)
+    .filter((row) => !row.spent)
     .reduce((sum, row) => sum + row.quantity * row.price, 0)
 
   return (
@@ -279,18 +181,24 @@ function GrandTotal({ data }: { data: LineItem[] }) {
   )
 }
 
-
-export function EditableDataTable() {
-  const [data, setData] = useState<LineItem[]>(initialData)
+export function EditableDataTable({ portfolioId, }: EditableDataTableProps) {
+  const [items, setItems] = useState<Item[]>([]);
+      console.log("Items in portfolio:", items);
+          
+      useEffect(() => {
+          getItems(portfolioId)
+            .then(setItems)
+            .catch(console.error);
+      }, [portfolioId]);
 
   const table = useReactTable({
-    data,
+    data: items,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     meta: {
       updateData: (rowIndex: number, columnId: any, value: any) => {
-        setData((old) =>
+        setItems((old) =>
           old.map((row, index) =>
             index === rowIndex
               ? { ...row, [columnId]: value }
@@ -367,7 +275,7 @@ export function EditableDataTable() {
           {table.getRowModel().rows.map((row) => (
             <TableRow
               key={row.id}
-              className={row.original.checked ? "opacity-60" : ""}
+              className={row.original.spent ? "opacity-60" : ""}
             >
               {row.getVisibleCells().map((cell) => (
                 <TableCell key={cell.id}>
@@ -421,7 +329,7 @@ export function EditableDataTable() {
       </Pagination>
 
 
-      <GrandTotal data={data} />
+      <GrandTotal data={items} />
     </Card>
     </>
   )
