@@ -18,6 +18,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from '@/components/ui/button';
+import { Input } from "@/components/ui/input";
 import { Menu, BookCheck, FileArchive, Repeat, Delete, BookAlert } from 'lucide-react';
 import { EditableDataTable } from '@/components/portfolio/PortfolioTable';
 import { Card, CardContent } from '@/components/ui/card';
@@ -47,9 +48,11 @@ async function getPortfolioData(portfolioId: string) {
   return res.json();
 }
 
+
 function Portfolio() {
     const { portfolioId } = PortfolioRoute.useParams();
     const [open, setOpen] = useState(false)
+    const [title, setTitle] = useState("");
 
     const [portfolio, setPortfolio] = useState<Portfolio>();
           console.log("Portfolio in dashboard:", portfolio);
@@ -59,6 +62,35 @@ function Portfolio() {
               .then(setPortfolio)
               .catch(console.error);
           }, [portfolioId]);
+
+    useEffect(() => {
+        if (portfolio) {
+            setTitle(portfolio?.title || "");
+        }
+    }, [portfolio]);
+
+    const saveNewTitle = async () => {
+        try {
+            const response = await fetch(`http://localhost:3001/api/portfolio/${portfolioId}/new-title`, {
+            method: "PATCH", // or PUT/PATCH
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                id: portfolio?.portfolio_id,
+                title,
+            }),
+            });
+
+            if (!response.ok) {
+            throw new Error("Failed to save new title");
+            }
+
+            console.log("Saved!");
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     return (
         <> 
@@ -73,7 +105,20 @@ function Portfolio() {
                             <FieldLabel className="font-thin mt-[-1]">
                                 Portfolio Name
                             </FieldLabel>
-                            <input type="text" value={portfolio?.title ?? ""} readOnly className="rounded-md border max-w-xl p-2" />
+                            {/* <input type="text" value={portfolio?.title ?? ""} readOnly className="rounded-md border max-w-xl p-2" /> */}
+                            <Input
+                                className="rounded-md border max-w-xl p-2"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    saveNewTitle();
+                                    e.currentTarget.blur()
+                                    }
+                                }}
+                                onBlur={saveNewTitle}
+                            />
                             
                         </Field>
                         <Field>
@@ -130,7 +175,7 @@ function Portfolio() {
             </CardContent>
             </Card>
 
-            <EditableDataTable portfolioId={portfolioId as string} />
+            <EditableDataTable portfolioId={portfolioId as string} allottedFund={portfolio?.allotted_fund as number} />
             </div>
 
             <AlertDialog open={open} onOpenChange={setOpen}>

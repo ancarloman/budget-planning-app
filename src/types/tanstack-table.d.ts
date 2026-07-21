@@ -7,5 +7,7 @@ declare module "@tanstack/react-table" {
       columnId: string,
       value: unknown
     ) => void
+
+    deleteRow: (rowIndex: number) => void 
   }
 }

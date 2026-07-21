@@ -21,6 +21,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -47,6 +48,7 @@ import { Button } from "@/components/ui/button"
 
 interface EditableDataTableProps {
   portfolioId: string;
+  allottedFund: number;
 }
 
 interface Item {
@@ -60,12 +62,46 @@ interface Item {
   created_at: string
 }
 
+interface AddItemRequest {
+  title: string;
+  quantity: number;
+  price: number;
+  portfolioId: string;
+}
 
 async function getItems(portfolioId: string) {
   const res = await fetch("http://localhost:3001/api/portfolio/items/" + portfolioId);
 
   if (!res.ok) {
     throw new Error("Failed to fetch items");
+  }
+
+  return res.json();
+}
+
+async function postItem(item: AddItemRequest) {
+  const res = await fetch("http://localhost:3001/api/portfolio/items/add-item", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(item),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to add item");
+  }
+
+  return res.json();
+}
+
+async function deleteItem(itemId: number) {
+  const res = await fetch(`http://localhost:3001/api/portfolio/items/delete-item/${itemId}`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to delete item");
   }
 
   return res.json();
@@ -79,7 +115,9 @@ export const columns: ColumnDef<Item>[] = [
       <Checkbox
         checked={row.original.spent === 1}
         onCheckedChange={(v) =>
-          table.options.meta?.updateData(row.index, "checked", !!v)
+          table.options.meta?.updateData(row.index,
+      "spent",
+      v ? 1 : 0)
         }
       />
     ),
@@ -143,7 +181,7 @@ export const columns: ColumnDef<Item>[] = [
   {
     id: "action",
     header: "",
-    cell: ({row}) => {
+    cell: ({row, table}) => {
       return (
         <AlertDialog>
           <AlertDialogTrigger asChild>
@@ -160,7 +198,9 @@ export const columns: ColumnDef<Item>[] = [
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction className="bg-red-300">Continue</AlertDialogAction>
+              <AlertDialogAction className="bg-red-300" onClick={async () => {
+                await table.options.meta?.deleteRow(row.original.item_id);
+              }}>Continue</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
@@ -169,19 +209,10 @@ export const columns: ColumnDef<Item>[] = [
   },
 ]
 
-function GrandTotal({ data }: { data: Item[] }) {
-  const total = data
-    .filter((row) => !row.spent)
-    .reduce((sum, row) => sum + row.quantity * row.price, 0)
 
-  return (
-    <div className="flex justify-end mt-4 text-lg font-semibold">
-      Total: {total.toFixed(2)}
-    </div>
-  )
-}
-
-export function EditableDataTable({ portfolioId, }: EditableDataTableProps) {
+export function EditableDataTable({ portfolioId, allottedFund }: EditableDataTableProps) {
+  const [open, setOpen] = useState(false);
+  // const [openDelete, setOpenDelete] = useState(false);
   const [items, setItems] = useState<Item[]>([]);
       console.log("Items in portfolio:", items);
           
@@ -190,6 +221,65 @@ export function EditableDataTable({ portfolioId, }: EditableDataTableProps) {
             .then(setItems)
             .catch(console.error);
       }, [portfolioId]);
+  
+  const handleAddItem = async (
+  event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    try {
+      await postItem({
+        title: formData.get("entry") as string,
+        quantity: Number(formData.get("quantity")),
+        price: Number(formData.get("amount")),
+        portfolioId,
+      });
+
+      // Refresh the table
+      const updatedItems = await getItems(portfolioId);
+      setItems(updatedItems);
+      form.reset();
+
+      setOpen(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  function GrandTotal({ data }: { data: Item[] }) {
+    const total = data
+      .reduce((sum, row) => sum + row.quantity * row.price, 0)
+
+    const totalSpent = data
+      .filter((row) => row.spent)
+      .reduce((sum, row) => sum + row.quantity * row.price, 0)
+
+    const remainingBalance = allottedFund - totalSpent;
+
+    return (
+      <div className="mt-4 flex justify-end">
+        <div className="w-72 border-t pt-3 space-y-2">
+          <div className="flex justify-between">
+            <span className="font">Total</span>
+            <span className="font">{total.toFixed(2)}</span>
+          </div>
+
+          <div className="flex justify-between">
+            <span className="font">Spent</span>
+            <span>{(totalSpent).toFixed(2)}</span>
+          </div>
+
+          <div className={`flex justify-between text-base font-bold ${remainingBalance < 0 ? "text-destructive" : ""}`}>
+            <span className="font-medium">Remaining Balance</span>
+            <span>{(allottedFund - totalSpent).toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
+          )
+    }
 
   const table = useReactTable({
     data: items,
@@ -206,6 +296,13 @@ export function EditableDataTable({ portfolioId, }: EditableDataTableProps) {
           )
         )
       },
+      deleteRow: async (itemId: number) => {
+        await deleteItem(itemId);
+
+        setItems((old) =>
+          old.filter((item) => item.item_id !== itemId)
+        );
+      },
     },
   })
 
@@ -220,14 +317,19 @@ export function EditableDataTable({ portfolioId, }: EditableDataTableProps) {
     <>
     <Card className="p-6 mt-12 border-0">
       <div className="flex justify-end gap-2">
-        <Dialog>
-          <form>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button variant="outline"><Plus /> Item</Button>
             </DialogTrigger>
+            
             <DialogContent className="sm:max-w-sm">
+              <form  onSubmit={handleAddItem}>
               <DialogHeader>
                 <DialogTitle>New item</DialogTitle>
+                <DialogDescription  aria-describedby={undefined}>
+                  
+                  {/* Fill out the form below to add a new item to this portfolio. */}
+                </DialogDescription>
               </DialogHeader>
               <FieldGroup className="my-4">
                 <Field>
@@ -249,8 +351,8 @@ export function EditableDataTable({ portfolioId, }: EditableDataTableProps) {
                 </DialogClose>
                 <Button type="submit">Add</Button>
               </DialogFooter>
-            </DialogContent>
-          </form>
+            </form>
+          </DialogContent>
         </Dialog>
       </div>
       <Table>
