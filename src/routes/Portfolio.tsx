@@ -24,73 +24,92 @@ import { EditableDataTable } from '@/components/portfolio/PortfolioTable';
 import { Card, CardContent } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
 import { PortfolioRoute } from '@/router';
-
-type Portfolio = {
-    portfolio_id: number
-    title: string
-    description: string
-    account_id: number
-    allotted_fund: number
-    budgeted_fund: number
-    spent_fund: number
-    completed: boolean | 0 | 1
-    archived: boolean | 0 | 1
-    created_at: string
-}
-
-async function getPortfolioData(portfolioId: string) {
-  const res = await fetch("http://localhost:3001/api/portfolio/" + portfolioId);
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
-
-  return res.json();
-}
+import { usePortfolio, useUpdatePortfolioAllottedBudget, useUpdatePortfolioTitle } from '@/hooks/usePortfolio';
 
 
 function Portfolio() {
     const { portfolioId } = PortfolioRoute.useParams();
-    const [open, setOpen] = useState(false)
+    const { data: portfolio } = usePortfolio(portfolioId); // can add isLoading here
+    // const { data: portfolio } = usePortfolio(portfolioId);
+    const updateTitle = useUpdatePortfolioTitle(portfolioId);
+    const updateAllottedFund = useUpdatePortfolioAllottedBudget(portfolioId);
     const [title, setTitle] = useState("");
+    const [open, setOpen] = useState(false)
+    const [allottedFund, setAllottedFund] = useState(0);
 
-    const [portfolio, setPortfolio] = useState<Portfolio>();
-          console.log("Portfolio in dashboard:", portfolio);
+    // const [portfolio, setPortfolio] = useState<Portfolio>();
+    //       console.log("Portfolio in dashboard:", portfolio);
         
-          useEffect(() => {
-            getPortfolioData(portfolioId)
-              .then(setPortfolio)
-              .catch(console.error);
-          }, [portfolioId]);
+    //       useEffect(() => {
+    //         getPortfolioData(portfolioId)
+    //           .then(setPortfolio)
+    //           .catch(console.error);
+    //       }, [portfolioId]);
 
     useEffect(() => {
         if (portfolio) {
             setTitle(portfolio?.title || "");
+            setAllottedFund(portfolio?.allotted_fund || 0);
         }
     }, [portfolio]);
 
-    const saveNewTitle = async () => {
-        try {
-            const response = await fetch(`http://localhost:3001/api/portfolio/${portfolioId}/new-title`, {
-            method: "PATCH", // or PUT/PATCH
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                id: portfolio?.portfolio_id,
-                title,
-            }),
-            });
-
-            if (!response.ok) {
-            throw new Error("Failed to save new title");
-            }
-
-            console.log("Saved!");
-        } catch (err) {
-            console.error(err);
-        }
+    const saveNewTitle = () => {
+        updateTitle.mutate(title);
     };
+
+    const saveNewAllottedFund = () => {
+        updateAllottedFund.mutate(allottedFund);
+    };
+
+    // const saveNewTitle = async () => {
+    //     if (title === portfolio?.title) return;
+
+    //     console.log("Saving title:", title);
+    //     try {
+    //         const response = await fetch(`http://localhost:3001/api/portfolio/${portfolioId}/new-title`, {
+    //         method: "PATCH",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //         },
+    //         body: JSON.stringify({
+    //             title: title,
+    //         }),
+    //         });
+
+    //         if (!response.ok) {
+    //         throw new Error("Failed to save new title");
+    //         }
+
+    //         console.log("Saved!");
+    //     } catch (err) {
+    //         console.error(err);
+    //     }
+    // };
+
+    // const saveNewAllottedFund = async () => {
+    //     if (allottedFund === portfolio?.allotted_fund) return;
+
+    //     console.log("Saving allotted fund:", allottedFund);
+    //     try {
+    //         const response = await fetch(`http://localhost:3001/api/portfolio/${portfolioId}/new-allotted-fund`, {
+    //         method: "PATCH",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //         },
+    //         body: JSON.stringify({
+    //             allotted_fund: allottedFund,
+    //         }),
+    //         });
+
+    //         if (!response.ok) {
+    //         throw new Error("Failed to save new allotted fund");
+    //         }
+
+    //         console.log("Saved!");
+    //     } catch (err) {
+    //         console.error(err);
+    //     }
+    // };
 
     return (
         <> 
@@ -105,7 +124,6 @@ function Portfolio() {
                             <FieldLabel className="font-thin mt-[-1]">
                                 Portfolio Name
                             </FieldLabel>
-                            {/* <input type="text" value={portfolio?.title ?? ""} readOnly className="rounded-md border max-w-xl p-2" /> */}
                             <Input
                                 className="rounded-md border max-w-xl p-2"
                                 value={title}
@@ -125,7 +143,20 @@ function Portfolio() {
                             <FieldLabel className="font-thin mt-[-1]">
                                 Allotted Fund
                             </FieldLabel>
-                            <input type="number" value={portfolio?.allotted_fund ?? ""} readOnly className="rounded-md border max-w-xl p-2" />
+                            {/* <input type="number" value={portfolio?.allotted_fund ?? ""} readOnly className="rounded-md border max-w-xl p-2" /> */}
+                            <Input
+                                className="rounded-md border max-w-xl p-2"
+                                value={allottedFund}
+                                onChange={(e) => setAllottedFund(Number(e.target.value))}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    saveNewAllottedFund();
+                                    e.currentTarget.blur()
+                                    }
+                                }}
+                                onBlur={saveNewAllottedFund}
+                            />
                             
                         </Field>
                     </FieldSet>

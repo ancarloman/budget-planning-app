@@ -214,7 +214,7 @@ export function EditableDataTable({ portfolioId, allottedFund }: EditableDataTab
   const [open, setOpen] = useState(false);
   // const [openDelete, setOpenDelete] = useState(false);
   const [items, setItems] = useState<Item[]>([]);
-      console.log("Items in portfolio:", items);
+      // console.log("Items in portfolio:", items);
           
       useEffect(() => {
           getItems(portfolioId)
