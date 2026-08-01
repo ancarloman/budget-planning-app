@@ -39,21 +39,12 @@ const PAGE_SIZE = 10
 
 function TransactionTable() {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
-      console.log("Transaction in dashboard:", transactions);
     
       useEffect(() => {
         getTransactions()
           .then(setTransactions)
           .catch(console.error);
       }, []);
-
-    // const transactions: Transaction[] = Array.from({ length: 87 }).map((_, i) => ({
-    // id: i + 1,
-    // date: "Feb 15, 2026",
-    // title: "Snacks",
-    // description: i % 2 === 0 ? "Project related expense" : undefined,
-    // amount: "-$305.50",
-    // }))
 
     const [page, setPage] = useState(1)
 

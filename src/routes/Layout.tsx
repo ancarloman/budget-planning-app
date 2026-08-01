@@ -9,8 +9,6 @@ import { useSidebarPortfolio } from '@/hooks/useSidebarPortfolio'
 function Layout() {
   const { data: portfolios = [], isLoading, error } = useSidebarPortfolio();
 
-  // console.log("Portfolios in Layout:", portfolios);
-
   if (isLoading) {
     return <div>Loading...</div>;
   }

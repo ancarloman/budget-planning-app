@@ -44,67 +44,12 @@ import {
 import { useEffect, useState } from "react"
 import { Card } from "../ui/card"
 import { Button } from "@/components/ui/button"
-// import type { NavItem } from "../layout/SideBar"
+import { useAddItem, useDeleteItem, usePortfolio, usePortfolioItems, type Item } from "@/hooks/usePortfolio"
+import { useQueryClient } from "@tanstack/react-query"
 
 interface EditableDataTableProps {
-  portfolioId: string;
-  allottedFund: number;
-}
-
-interface Item {
-  item_id: number
-  title: string
-  quantity: number
-  price: number
-  spent: number | 0 | 1
-  transaction_id: number
-  portfolio_id: number
-  created_at: string
-}
-
-interface AddItemRequest {
-  title: string;
-  quantity: number;
-  price: number;
-  portfolioId: string;
-}
-
-async function getItems(portfolioId: string) {
-  const res = await fetch("http://localhost:3001/api/portfolio/items/" + portfolioId);
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch items");
-  }
-
-  return res.json();
-}
-
-async function postItem(item: AddItemRequest) {
-  const res = await fetch("http://localhost:3001/api/portfolio/items/add-item", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(item),
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to add item");
-  }
-
-  return res.json();
-}
-
-async function deleteItem(itemId: number) {
-  const res = await fetch(`http://localhost:3001/api/portfolio/items/delete-item/${itemId}`, {
-    method: "DELETE",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to delete item");
-  }
-
-  return res.json();
+  portfolioId: number;
+  // allottedFund: number;
 }
 
 export const columns: ColumnDef<Item>[] = [
@@ -210,20 +155,17 @@ export const columns: ColumnDef<Item>[] = [
 ]
 
 
-export function EditableDataTable({ portfolioId, allottedFund }: EditableDataTableProps) {
+export function EditableDataTable({ portfolioId }: EditableDataTableProps) {
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  // const [openDelete, setOpenDelete] = useState(false);
-  const [items, setItems] = useState<Item[]>([]);
-      // console.log("Items in portfolio:", items);
+  const { data: portfolio } = usePortfolio(portfolioId);
+  const { data: items = [] } = usePortfolioItems(portfolioId);
           
-      useEffect(() => {
-          getItems(portfolioId)
-            .then(setItems)
-            .catch(console.error);
-      }, [portfolioId]);
+  const deleteItemMutation = useDeleteItem();
+  const addItemMutation = useAddItem();
   
   const handleAddItem = async (
-  event: React.FormEvent<HTMLFormElement>
+    event: React.SubmitEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
 
@@ -231,18 +173,14 @@ export function EditableDataTable({ portfolioId, allottedFund }: EditableDataTab
     const formData = new FormData(form);
 
     try {
-      await postItem({
+      await addItemMutation.mutateAsync({
         title: formData.get("entry") as string,
         quantity: Number(formData.get("quantity")),
         price: Number(formData.get("amount")),
         portfolioId,
       });
 
-      // Refresh the table
-      const updatedItems = await getItems(portfolioId);
-      setItems(updatedItems);
       form.reset();
-
       setOpen(false);
     } catch (err) {
       console.error(err);
@@ -250,6 +188,8 @@ export function EditableDataTable({ portfolioId, allottedFund }: EditableDataTab
   };
 
   function GrandTotal({ data }: { data: Item[] }) {
+    const allottedFund = portfolio?.allotted_fund ?? 0;
+
     const total = data
       .reduce((sum, row) => sum + row.quantity * row.price, 0)
 
@@ -288,20 +228,21 @@ export function EditableDataTable({ portfolioId, allottedFund }: EditableDataTab
     getPaginationRowModel: getPaginationRowModel(),
     meta: {
       updateData: (rowIndex: number, columnId: any, value: any) => {
-        setItems((old) =>
-          old.map((row, index) =>
-            index === rowIndex
-              ? { ...row, [columnId]: value }
-              : row
-          )
-        )
+        queryClient.setQueryData<Item[]>(
+          ["portfolio-items", portfolioId],
+          (old = []) =>
+            old.map((row, index) =>
+              index === rowIndex
+                ? { ...row, [columnId]: value }
+                : row
+            )
+        );
       },
       deleteRow: async (itemId: number) => {
-        await deleteItem(itemId);
-
-        setItems((old) =>
-          old.filter((item) => item.item_id !== itemId)
-        );
+        await deleteItemMutation.mutateAsync({
+          itemId: itemId,
+          portfolioId,
+        });
       },
     },
   })
@@ -436,3 +377,5 @@ export function EditableDataTable({ portfolioId, allottedFund }: EditableDataTab
     </>
   )
 }
+
+

@@ -61,56 +61,6 @@ function Portfolio() {
         updateAllottedFund.mutate(allottedFund);
     };
 
-    // const saveNewTitle = async () => {
-    //     if (title === portfolio?.title) return;
-
-    //     console.log("Saving title:", title);
-    //     try {
-    //         const response = await fetch(`http://localhost:3001/api/portfolio/${portfolioId}/new-title`, {
-    //         method: "PATCH",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //         },
-    //         body: JSON.stringify({
-    //             title: title,
-    //         }),
-    //         });
-
-    //         if (!response.ok) {
-    //         throw new Error("Failed to save new title");
-    //         }
-
-    //         console.log("Saved!");
-    //     } catch (err) {
-    //         console.error(err);
-    //     }
-    // };
-
-    // const saveNewAllottedFund = async () => {
-    //     if (allottedFund === portfolio?.allotted_fund) return;
-
-    //     console.log("Saving allotted fund:", allottedFund);
-    //     try {
-    //         const response = await fetch(`http://localhost:3001/api/portfolio/${portfolioId}/new-allotted-fund`, {
-    //         method: "PATCH",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //         },
-    //         body: JSON.stringify({
-    //             allotted_fund: allottedFund,
-    //         }),
-    //         });
-
-    //         if (!response.ok) {
-    //         throw new Error("Failed to save new allotted fund");
-    //         }
-
-    //         console.log("Saved!");
-    //     } catch (err) {
-    //         console.error(err);
-    //     }
-    // };
-
     return (
         <> 
             <div className="min-h-screen  max-w-6xl mx-auto flex flex-col">
@@ -206,7 +156,7 @@ function Portfolio() {
             </CardContent>
             </Card>
 
-            <EditableDataTable portfolioId={portfolioId as string} allottedFund={portfolio?.allotted_fund as number} />
+            <EditableDataTable portfolioId={portfolioId} />
             </div>
 
             <AlertDialog open={open} onOpenChange={setOpen}>
